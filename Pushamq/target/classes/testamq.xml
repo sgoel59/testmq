@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:anypoint-mq="http://www.mulesoft.org/schema/mule/anypoint-mq"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<anypoint-mq:default-subscriber-config name="Anypoint_MQ_Default_subscriber" doc:name="Anypoint MQ Default subscriber" doc:id="036152f5-f0bb-4b77-a399-8d7267a968d5" >
+		<anypoint-mq:connection clientId="268d7e6bca0b46608aae1d5d2206be9e" clientSecret="777B5e72811349979f20c75cf237843A" />
+	</anypoint-mq:default-subscriber-config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="674dfe25-1ccb-486f-bf62-b4e6d35e7877" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+	<global-property doc:name="Global Property" doc:id="85002d97-3f1f-47f5-9e3a-6dee9e34e4bc" name="http.port" value="8085" />
+	<flow name="testamqFlow" doc:id="315c5820-5277-46c4-ab46-f66172b0829a" >
+		<http:listener doc:name="Listener" doc:id="1eb6d025-22d8-4ff0-ae0f-db039704773d" config-ref="HTTP_Listener_config" path="/PushQueueMessage" allowedMethods="POST"/>
+		<logger level="INFO" doc:name="Logger" doc:id="d37a2f55-0a5b-4f9d-9372-5d442b09553a" message="Queue name #[attributes.queryParams.QueueName] and Queue payload #[payload]"/>
+		<anypoint-mq:publish doc:name="Publish" doc:id="f0b923b5-1ef8-4d91-aa80-9ba6abca5d5e" config-ref="Anypoint_MQ_Default_subscriber" destination="#[attributes.queryParams.QueueName]"/>
+	</flow>
+</mule>
